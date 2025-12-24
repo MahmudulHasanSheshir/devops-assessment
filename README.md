@@ -17,6 +17,8 @@ The system consists of 3 microservices and 2 backing services:
 
 ![Architecture Diagram](./architecture_diagram.png)
 
+[View editable diagram (Excalidraw)](https://excalidraw.com/#json=qILS1gp8LqDd6zsQqBLb8,lRigXUoS-cmfBJIIrJSvoA)
+
 ## Prerequisites
 -   Docker & Docker Compose
 -   Node.js 20+ (optional, for local run without docker)
