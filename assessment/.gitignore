@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Environment variables
+.env
+.env.test
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.idea
+.vscode
+*.swp
+*.swo
+
+# Build output
+dist
+coverage
+*.zip
+
+# CANDIDATE EXCLUSIONS (PRIVATE)
+INSTRUCTOR_GUIDE.md
+CANDIDATE_EXPLAINER.md
+collections/

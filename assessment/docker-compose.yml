@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: toy_production
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://postgres:password@postgres:5432/toy_production
+      LOG_LEVEL: info
+      DB_CONNECTION_LIMIT: 5
+      API_SIMULATED_LATENCY: 0
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+  product-service:
+    build:
+      context: .
+      dockerfile: services/product-service/Dockerfile
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://postgres:password@postgres:5432/toy_production
+      REDIS_URL: redis://redis:6379
+      LOG_LEVEL: info
+      DB_CONNECTION_LIMIT: 5
+      USE_REDIS_CACHE: "true"
+      REDIS_TTL: 60
+      API_SIMULATED_LATENCY: 0
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - redis
+
+  order-service:
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgres://postgres:password@postgres:5432/toy_production
+      USER_SERVICE_URL: http://user-service:3000
+      PRODUCT_SERVICE_URL: http://product-service:3001
+      LOG_LEVEL: info
+      DB_CONNECTION_LIMIT: 5
+      # Client Configuration
+      HTTP_CLIENT_TIMEOUT: 2000
+      HTTP_CLIENT_RETRIES: 0
+      HTTP_CLIENT_RETRY_DELAY: 100
+      HEALTH_DEEP_CHECK: "false"
+      API_ERROR_SAMPLING: "0.0"
+      API_SIMULATED_LATENCY: 0
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+      - user-service
+      - product-service

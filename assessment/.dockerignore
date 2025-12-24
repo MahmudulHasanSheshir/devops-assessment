@@ -1,0 +1,25 @@
+# General
+.git
+.DS_Store
+node_modules
+*/node_modules
+*.md
+
+# Environment
+.env
+.env.*
+
+# Private/Instructor Files
+INSTRUCTOR_GUIDE.md
+CANDIDATE_EXPLAINER.md
+collections/
+
+# Build artifacts
+dist
+*.zip
+coverage
+
+# Scripts/Config not needed in container
+docker-compose.yml
+scripts
+*.sh
