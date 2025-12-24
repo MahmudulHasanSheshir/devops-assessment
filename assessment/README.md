@@ -50,6 +50,35 @@ The database is automatically seeded via `init.sql` on the first startup. To res
 ./scripts/seed.sh
 ```
 
+## Environment Variables
+The application is configured via environment variables.
+
+### Service Connectivity (Required)
+These variables are critical for services to talk to each other and the data layer.
+
+| Variable | Service | Value Example | Description |
+| :--- | :--- | :--- | :--- |
+| `DATABASE_URL` | All | `postgres://user:pass@host:5432/db` | Postgres connection string. |
+| `REDIS_URL` | Product | `redis://host:6379` | Redis connection string. |
+| `USER_SERVICE_URL` | Order | `http://user-service:3000` | URL to reach User Service. |
+| `PRODUCT_SERVICE_URL` | Order | `http://product-service:3001` | URL to reach Product Service. |
+| `PORT` | All | `3000` | Port the service listens on. |
+
+### Application Tuning (Toggles)
+These modify application behavior (timeouts, retries, etc.).
+
+| Variable | Service | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `HTTP_CLIENT_TIMEOUT` | Order | `2000` | Timeout for downstream HTTP requests (ms). |
+| `HTTP_CLIENT_RETRIES` | Order | `0` | Number of retry attempts for failed requests. |
+| `HTTP_CLIENT_RETRY_DELAY` | Order | `100` | Delay between retry attempts (ms). |
+| `DB_CONNECTION_LIMIT` | All | `5` | Maximum number of concurrent database connections. |
+| `HEALTH_DEEP_CHECK` | Order | `false` | Enables checking dependent services during readiness probes. |
+| `USE_REDIS_CACHE` | Product | `true` | Enables/Disables Redis caching. |
+| `REDIS_TTL` | Product | `60` | Cache Time-To-Live in seconds. |
+| `API_SIMULATED_LATENCY`| All | `0` | Debugging tool to inject fixed latency (ms). |
+| `API_ERROR_SAMPLING` | All | `0.0` | Telemetry sampling rate for simulated errors (0.0 - 1.0). |
+
 ## Candidate Instructions (What You Must Do)
 
 ### 1. Understand the goal
@@ -99,7 +128,10 @@ You must create the Kubernetes deployment configuration yourself.
 *   **Config** via environment variables (do not hardcode).
 *   **Secrets** must be handled safely (see Security section).
 
-You must also apply database migrations and seed data in the deployed environment (your approach is up to you, but document it).
+You must also apply database migrations and seed data in the deployed environment.
+*   **Requirement:** The database must be ready *before* services start.
+*   **Allowed Approaches:** Kubernetes Job (Helm hook), Init Container, or a manual administrative command.
+*   **Tip:** Use the provided `scripts/init.sql` contents.
 
 ### 5. Expose the services externally (routing required)
 All services must be reachable from outside the cluster through a proper ingress layer.
