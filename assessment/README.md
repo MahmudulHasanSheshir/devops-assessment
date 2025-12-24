@@ -15,44 +15,7 @@ The system consists of 3 microservices and 2 backing services:
 
 ### System Architecture
 
-```mermaid
-graph TD
-    %% Nodes
-    Client["Client / Ingress"]:::client
-
-    subgraph "Microservices Cluster"
-        OrderSvc["Order Service (Node.js)"]:::service
-        UserSvc["User Service (Node.js)"]:::service
-        ProductSvc["Product Service (Node.js)"]:::service
-    end
-
-    subgraph "Data Layer"
-        Postgres["PostgreSQL"]:::database
-        Redis["Redis (Cache)"]:::cache
-    end
-
-    %% Connections
-    Client -- "POST /orders" --> OrderSvc
-    Client -- "GET /products" --> ProductSvc
-    Client -- "GET /users" --> UserSvc
-
-    %% Service-to-Service (Synchronous)
-    OrderSvc -- "1. GET /users/:id" --> UserSvc
-    OrderSvc -- "2. GET /products/:id" --> ProductSvc
-
-    %% Data Access
-    UserSvc -- "SELECT * FROM users" --> Postgres
-    OrderSvc -- "INSERT INTO orders" --> Postgres
-    
-    ProductSvc -- "1. GET product:id" --> Redis
-    ProductSvc -- "2. SELECT * FROM products" --> Postgres
-    
-    %% Styling
-    classDef service fill:#d4ebf2,stroke:#005f87,stroke-width:2px;
-    classDef database fill:#f2e6d4,stroke:#875f00,stroke-width:2px,shape:cylinder;
-    classDef cache fill:#e6d4f2,stroke:#5f0087,stroke-width:2px,shape:cylinder;
-    classDef client fill:#ffffff,stroke:#333333,stroke-width:1px,stroke-dasharray: 5 5;
-```
+![Architecture Diagram](./architecture_diagram.png)
 
 ## Prerequisites
 -   Docker & Docker Compose
