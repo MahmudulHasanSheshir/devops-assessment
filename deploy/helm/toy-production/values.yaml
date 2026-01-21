@@ -1,0 +1,29 @@
+namespace: toy-production
+global:
+imageTag: "local"
+logLevel: "info"
+dbConnectionLimit: "5"
+apiSimulatedLatency: "0"
+apiErrorSampling: "0.0"
+httpClientTimeout: "2000"
+httpClientRetries: "0"
+httpClientRetryDelay: "100"
+healthDeepCheck: "true"
+useRedisCache: "true"
+redisTtl: "60"
+awsRegion: "us-east-1"
+images:
+userServiceRepo: "<SET_ME>"
+productServiceRepo: "<SET_ME>"
+orderServiceRepo: "<SET_ME>"
+redis:
+url: "<SET_ME>"
+databaseSecret:
+awsSecretName: "<SET_ME>"
+property: "database_url"
+ingress:
+enabled: true
+className: "alb"
+scheme: "internet-facing"
+loadBalancerName: "toy-production-dev-alb"
+listenPorts: '[{"HTTP": 80}]'
