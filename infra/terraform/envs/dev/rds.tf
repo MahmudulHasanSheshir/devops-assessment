@@ -1,6 +1,7 @@
 resource "random_password" "db" {
-length = 24
-special = true
+  length           = 24
+  special          = true
+  override_special = "!#$%^&*()-_=+[]{}|:?"  # Exclude /, @, ", and space
 }
 resource "aws_security_group" "rds" {
 name = "${local.name_prefix}-rds-sg"
