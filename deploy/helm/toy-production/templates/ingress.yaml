@@ -14,27 +14,27 @@ metadata:
     alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"
 spec:
   rules:
-    - http:
-        paths:
-          - path: /users
-            pathType: Prefix
-            backend:
-              service:
-                name: user-service
-                port:
-                  number: 3000
-          - path: /products
-            pathType: Prefix
-            backend:
-              service:
-                name: product-service
-                port:
-                  number: 3001
-          - path: /orders
-            pathType: Prefix
-            backend:
-              service:
-                name: order-service
-                port:
-                  number: 3002
+  - http:
+      paths:
+      - path: /users
+        pathType: Prefix
+        backend:
+          service:
+            name: user-service
+            port:
+              number: 3000
+      - path: /products
+        pathType: Prefix
+        backend:
+          service:
+            name: product-service
+            port:
+              number: 3001
+      - path: /orders
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 3002
 {{- end }}
