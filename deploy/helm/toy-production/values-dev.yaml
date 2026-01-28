@@ -1,14 +1,15 @@
 namespace: toy-production
+
 global:
-imageTag: "<GIT_SHA_OR_TAG>"
-awsRegion: "us-east-1"
-healthDeepCheck: "true"
+  imageTag: "latest"
+  awsRegion: "us-east-1"
+  healthDeepCheck: "true"
 images:
-userServiceRepo: "<terraform_output_ecr_user_repo>"
-productServiceRepo: "<terraform_output_ecr_product_repo>"
-orderServiceRepo: "<terraform_output_ecr_order_repo>"
+  userServiceRepo: "222066942466.dkr.ecr.us-east-1.amazonaws.com/toy-production-dev-user-service"
+  productServiceRepo: "222066942466.dkr.ecr.us-east-1.amazonaws.com/toy-production-dev-product-service"
+  orderServiceRepo: "222066942466.dkr.ecr.us-east-1.amazonaws.com/toy-production-dev-order-service"
 redis:
-url: "redis://<terraform_output_redis_endpoint>:6379"
+  url: "redis://toy-production-dev-redis.itnjhu.ng.0001.use1.cache.amazonaws.com:6379"
 databaseSecret:
-awsSecretName: "<terraform_output_db_secret_name>"
-property: "database_url"
+  awsSecretName: "toy-production-dev/database"
+  property: "database_url"
