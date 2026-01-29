@@ -34,6 +34,8 @@ spec:
           ports:
             - containerPort: 3000
           env:
+            - name: NODE_EXTRA_CA_CERTS
+              value: /etc/rds-ca/rds-combined-ca-bundle.pem
             - name: PORT
               value: "3000"
           envFrom:
