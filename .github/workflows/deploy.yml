@@ -60,6 +60,7 @@ jobs:
             --create-namespace \
             -f deploy/helm/toy-production/values-dev.yaml \
             --set global.imageTag="${IMAGE_TAG}" \
+            --set ingress.enabled=true \
             --wait --timeout 20m
 
 
