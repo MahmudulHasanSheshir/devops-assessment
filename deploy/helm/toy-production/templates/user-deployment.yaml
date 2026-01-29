@@ -19,6 +19,13 @@ spec:
           envFrom:
             - secretRef:
                 name: toy-production-db
+          volumeMounts:
+            - name: rds-ca
+              mountPath: /etc/rds-ca
+              readOnly: true
+          env:
+            - name: PGSSLROOTCERT
+              value: /etc/rds-ca/rds-combined-ca-bundle.pem
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -30,13 +37,13 @@ spec:
               echo "Users seed ready."
       containers:
         - name: user-service
-          volumeMounts:
-          - name: rds-ca
-            mountPath: /etc/rds-ca
-            readOnly: true
           image: "{{ .Values.images.userServiceRepo }}:{{ .Values.global.imageTag }}"
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - name: rds-ca
+              mountPath: /etc/rds-ca
+              readOnly: true
           env:
             - name: NODE_EXTRA_CA_CERTS
               value: /etc/rds-ca/rds-combined-ca-bundle.pem
@@ -67,10 +74,6 @@ spec:
               cpu: 500m
               memory: 512Mi
       volumes:
-      - name: rds-ca
-        configMap:
-          name: rds-ca-bundle
-      volumeMounts:
-      - name: rds-ca
-        mountPath: /etc/rds-ca
-        readOnly: true
+        - name: rds-ca
+          configMap:
+            name: rds-ca-bundle

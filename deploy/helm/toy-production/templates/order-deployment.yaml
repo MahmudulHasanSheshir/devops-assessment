@@ -19,22 +19,31 @@ spec:
         envFrom:
         - secretRef:
             name: toy-production-db
+        volumeMounts:
+        - name: rds-ca
+          mountPath: /etc/rds-ca
+          readOnly: true
+        env:
+        - name: PGSSLROOTCERT
+          value: /etc/rds-ca/rds-combined-ca-bundle.pem
         command: ["/bin/sh", "-c"]
         args:
         - |
           set -e
           echo "Waiting for orders table..."
-          until psql "$DATABASE_URL" -c "SELECT 1 FROM information_schema.tables WHERE table_name='orders'"; do sleep 3; done
+          until psql "$DATABASE_URL" -c "SELECT 1 FROM information_schema.tables WHERE table_name='orders'" >/dev/null 2>&1; do
+            sleep 3
+          done
           echo "Orders table ready."
       containers:
       - name: order-service
+        image: "{{ .Values.images.orderServiceRepo }}:{{ .Values.global.imageTag }}"
+        ports:
+        - containerPort: 3002
         volumeMounts:
         - name: rds-ca
           mountPath: /etc/rds-ca
           readOnly: true
-        image: "{{ .Values.images.orderServiceRepo }}:{{ .Values.global.imageTag }}"
-        ports:
-        - containerPort: 3002
         env:
         - name: NODE_EXTRA_CA_CERTS
           value: /etc/rds-ca/rds-combined-ca-bundle.pem
@@ -68,4 +77,3 @@ spec:
       - name: rds-ca
         configMap:
           name: rds-ca-bundle
-      
