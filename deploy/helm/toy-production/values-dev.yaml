@@ -1,9 +1,9 @@
 namespace: toy-production
 
 global:
-  imageTag: "latest"
+  imageTag: "manual-20260128132358"
   awsRegion: "us-east-1"
-  healthDeepCheck: "true"
+  healthDeepCheck: "false"
 images:
   userServiceRepo: "222066942466.dkr.ecr.us-east-1.amazonaws.com/toy-production-dev-user-service"
   productServiceRepo: "222066942466.dkr.ecr.us-east-1.amazonaws.com/toy-production-dev-product-service"

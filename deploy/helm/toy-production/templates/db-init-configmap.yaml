@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Values.namespace }}
 data:
   init.sql: |
-    {{ .Files.Get "files/init.sql" | indent 4 }}
+{{ .Files.Get "files/init.sql" | indent 4 }}
