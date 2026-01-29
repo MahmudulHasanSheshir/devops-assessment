@@ -394,7 +394,7 @@ kubectl delete svc -n kube-system aws-load-balancer-webhook-service --ignore-not
 **Purpose:** Ensure Postgres connection strings are syntactically correct.
 
 ```bash
-export DBPW='8oy8%)|Rib}y+?FTV3-}?vwl'
+export DBPW='MY_DB_PASSWORD'
 
 python3 - <<'PY'
 import os, urllib.parse
