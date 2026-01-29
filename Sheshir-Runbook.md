@@ -10,7 +10,54 @@ I deploy the **toy-production** stack into an **EKS** cluster in **us-east-1**:
 - A GitHub Actions workflow that builds/pushes images to ECR and deploys to EKS using OIDC (no long-lived AWS keys)
 
 ---
+## Provision the Infra 
+To provision the infrastructure using IaC (specifically Terraform), I have created a remote state on my local workstation.(Preferably A Linux machine)
+```
+export AWS_REGION=us-east-1
+export TF_STATE_BUCKET="toy-prod-tfstate-<your-unique-suffix>"
+export TF_STATE_TABLE="toy-prod-tflock"
+aws s3api create-bucket \
+ --bucket "${TF_STATE_BUCKET}" \
+ --region "${AWS_REGION}" \
+ --create-bucket-configuration LocationConstraint="${AWS_REGION}"
+aws s3api put-bucket-versioning \
+ --bucket "${TF_STATE_BUCKET}" \
+ --versioning-configuration Status=Enabled
+aws dynamodb create-table \
+ --table-name "${TF_STATE_TABLE}" \
+ --attribute-definitions AttributeName=LockID,AttributeType=S \
+ --key-schema AttributeName=LockID,KeyType=HASH \
+ --billing-mode PAY_PER_REQU
+ ```
 
+Apply the commands below in `/infra/terraform/envs/dev` for creating the infrastructure in one go!
+```
+cd infra/terraform/envs/dev
+terraform init \
+ -backend-config="bucket=${TF_STATE_BUCKET}" \
+ -backend-config="key=toy-production/dev/terraform.tfstate" \
+ -backend-config="region=${AWS_REGION}" \
+ -backend-config="dynamodb_table=${TF_STATE_TABLE}"
+terraform apply \
+ -var="aws_region=${AWS_REGION}" \
+ -var="project=toy-production" \
+ -var="env=dev" \
+ -var="github_org=<YOUR_GH_ORG>" \
+ -var="github_repo=<YOUR_GH_REPO>"
+ ```
+For reference and in case of troubleshoot, this is the actual directory tree for the terraform 
+```
+infra/
+ terraform/
+ envs/dev/
+deploy/
+ helm/toy-production/
+scripts/
+ eks/
+ observability/
+.github/workflows/
+Sheshir-Runbook.md
+```
 ## One-go procedure (end-to-end)
 
 ### 1) Prereqs I check once
@@ -448,3 +495,20 @@ aws ecr list-images --region us-east-1 --repository-name toy-production-dev-orde
 - aligned ownership (only one Helm release should own it).
 
 **Purpose:** Avoid Helm ownership conflicts that block installs/upgrades.
+
+
+
+## Clean Up!
+```
+# Remove Kubernetes resources
+helm uninstall toy-production -n toy-production
+kubectl delete ns toy-production
+# Destroy AWS resources
+cd infra/terraform/envs/dev
+terraform destroy \
+ -var="aws_region=${AWS_REGION}" \
+ -var="project=toy-production" \
+ -var="env=dev" \
+ -var="github_org=<YOUR_GH_ORG>" \
+ -var="github_repo=<YOUR_GH_REPO>"
+```
