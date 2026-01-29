@@ -30,6 +30,10 @@ spec:
           echo "Products seed ready."
       containers:
       - name: product-service
+        volumeMounts:
+        - name: rds-ca
+          mountPath: /etc/rds-ca
+          readOnly: true
         image: "{{ .Values.images.productServiceRepo }}:{{ .Values.global.imageTag }}"
         ports:
         - containerPort: 3001
@@ -66,7 +70,4 @@ spec:
       - name: rds-ca
         configMap:
           name: rds-ca-bundle
-      volumeMounts:
-      - name: rds-ca
-        mountPath: /etc/rds-ca
-        readOnly: true
+      

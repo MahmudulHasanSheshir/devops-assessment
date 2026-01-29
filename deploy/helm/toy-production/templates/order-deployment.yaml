@@ -28,6 +28,10 @@ spec:
           echo "Orders table ready."
       containers:
       - name: order-service
+        volumeMounts:
+        - name: rds-ca
+          mountPath: /etc/rds-ca
+          readOnly: true
         image: "{{ .Values.images.orderServiceRepo }}:{{ .Values.global.imageTag }}"
         ports:
         - containerPort: 3002
@@ -64,7 +68,4 @@ spec:
       - name: rds-ca
         configMap:
           name: rds-ca-bundle
-      volumeMounts:
-      - name: rds-ca
-        mountPath: /etc/rds-ca
-        readOnly: true
+      

@@ -30,6 +30,10 @@ spec:
               echo "Users seed ready."
       containers:
         - name: user-service
+          volumeMounts:
+          - name: rds-ca
+            mountPath: /etc/rds-ca
+            readOnly: true
           image: "{{ .Values.images.userServiceRepo }}:{{ .Values.global.imageTag }}"
           ports:
             - containerPort: 3000
